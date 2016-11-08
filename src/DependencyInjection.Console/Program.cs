@@ -1,4 +1,6 @@
-﻿using NDesk.Options;
+﻿using DependencyInjection.Console.CharacterWriters;
+using DependencyInjection.Console.SquarePainters;
+using NDesk.Options;
 
 namespace DependencyInjection.Console
 {
@@ -20,7 +22,14 @@ namespace DependencyInjection.Console
             };
             optionSet.Parse(args);
 
-            var app = new PatternApp(useColors);
+            var squarePainter = new CircleSquarePainter();
+            var patternGenerator = new PatternGenerator(squarePainter);
+
+            ICharacterWriter asciiWriter = new AsciiWriter();
+            var characterWriter = useColors ? new ColorWriter(asciiWriter) : asciiWriter;
+            var patternWriter = new PatternWriter(characterWriter);
+
+            var app = new PatternApp(patternGenerator, patternWriter);
             app.Run(width, height);
         }
     }
