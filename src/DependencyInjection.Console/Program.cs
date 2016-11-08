@@ -22,7 +22,16 @@ namespace DependencyInjection.Console
             };
             optionSet.Parse(args);
 
-            var squarePainter = new CircleSquarePainter();
+            ISquarePainter squarePainter = new CircleSquarePainter();
+            if (pattern.Equals("oddeven"))
+            {
+                squarePainter = new OddEvenSquarePainter();
+            }
+
+            if (pattern.Equals("white"))
+            {
+                squarePainter = new WhiteSquarePainter();
+            }
             var patternGenerator = new PatternGenerator(squarePainter);
 
             ICharacterWriter asciiWriter = new AsciiWriter();
