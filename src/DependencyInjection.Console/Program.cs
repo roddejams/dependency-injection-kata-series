@@ -11,7 +11,7 @@ namespace DependencyInjection.Console
             var useColors = false;
             var width = 25;
             var height = 15;
-            var pattern = "circle"; // TODO: Hook this up
+            var pattern = "circle";
 
             var optionSet = new OptionSet
             {
@@ -21,17 +21,14 @@ namespace DependencyInjection.Console
                 {"p|pattern=", value => pattern = value}
             };
             optionSet.Parse(args);
-
-            ISquarePainter squarePainter = new CircleSquarePainter();
-            if (pattern.Equals("oddeven"))
+            
+            var squarePainter = CreateSquarePainter(pattern);
+            if (squarePainter == null)
             {
-                squarePainter = new OddEvenSquarePainter();
-            }
+                System.Console.WriteLine("Please choose from one of the following patterns : \"circle\", \"oddeven\" or \"white\"");
+                return;
+            } 
 
-            if (pattern.Equals("white"))
-            {
-                squarePainter = new WhiteSquarePainter();
-            }
             var patternGenerator = new PatternGenerator(squarePainter);
 
             ICharacterWriter asciiWriter = new AsciiWriter();
@@ -40,6 +37,20 @@ namespace DependencyInjection.Console
 
             var app = new PatternApp(patternGenerator, patternWriter);
             app.Run(width, height);
+        }
+
+        private static ISquarePainter CreateSquarePainter(string pattern)
+        {
+            switch (pattern)
+            {
+                case "circle":
+                    return new CircleSquarePainter();
+                case "oddeven":
+                    return new OddEvenSquarePainter();
+                case "white":
+                    return new WhiteSquarePainter();
+            }
+            return null;
         }
     }
 }
