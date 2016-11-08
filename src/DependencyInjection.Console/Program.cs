@@ -6,12 +6,16 @@ namespace DependencyInjection.Console
 {
     internal class Program
     {
+        private const string CirclePattern = "circle";
+        private const string OddevenPattern = "oddeven";
+        private const string WhitePattern = "white";
+
         private static void Main(string[] args)
         {
             var useColors = false;
             var width = 25;
             var height = 15;
-            var pattern = "circle";
+            var pattern = CirclePattern;
 
             var optionSet = new OptionSet
             {
@@ -25,7 +29,8 @@ namespace DependencyInjection.Console
             var squarePainter = CreateSquarePainter(pattern);
             if (squarePainter == null)
             {
-                System.Console.WriteLine("Please choose from one of the following patterns : \"circle\", \"oddeven\" or \"white\"");
+                System.Console.WriteLine(
+                    $"Please choose from one of the following patterns : \"{CirclePattern}\", \"{OddevenPattern}\" or \"{WhitePattern}\"");
                 return;
             } 
 
@@ -43,11 +48,11 @@ namespace DependencyInjection.Console
         {
             switch (pattern)
             {
-                case "circle":
+                case CirclePattern:
                     return new CircleSquarePainter();
-                case "oddeven":
+                case OddevenPattern:
                     return new OddEvenSquarePainter();
-                case "white":
+                case WhitePattern:
                     return new WhiteSquarePainter();
             }
             return null;
