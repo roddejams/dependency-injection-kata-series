@@ -1,4 +1,5 @@
-﻿using Autofac; 
+﻿using System.IO;
+using Autofac; 
 using NDesk.Options;
 
 namespace DependencyInjection.Console
@@ -10,7 +11,7 @@ namespace DependencyInjection.Console
             var useColors = false;
             var width = 25;
             var height = 15;
-            var pattern = "sdkfjhfskjdfhk";
+            var pattern = "circle";
 
             var optionSet = new OptionSet
                 {

@@ -6,21 +6,19 @@ namespace DependencyInjection.Console.CharacterWriters
     internal class ColorWriter : ICharacterWriter
     {
         private readonly ICharacterWriter _innerWriter;
+        private readonly IColorController _colorController;
 
-        public ColorWriter(ICharacterWriter innerWriter)
+        public ColorWriter(ICharacterWriter innerWriter, IColorController colorController)
         {
             _innerWriter = innerWriter;
+            _colorController = colorController;
         }
 
         public void Write(Square square)
         {
-            var color = GetColor(square);
-            System.Console.BackgroundColor = color;
-            System.Console.ForegroundColor = color;
-
+            _colorController.SetColor(square);
             _innerWriter.Write(square);
-
-            System.Console.ResetColor();
+            _colorController.ResetColor();
         }
 
         private static ConsoleColor GetColor(Square square)

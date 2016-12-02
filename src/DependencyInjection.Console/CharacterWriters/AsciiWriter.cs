@@ -8,9 +8,9 @@ namespace DependencyInjection.Console.CharacterWriters
     {
         private readonly TextWriter _output;
 
-        public AsciiWriter()
+        public AsciiWriter(TextWriter textWriter)
         {
-            _output = System.Console.Out;
+            _output = textWriter;
         }
 
         public void Write(Square square)
