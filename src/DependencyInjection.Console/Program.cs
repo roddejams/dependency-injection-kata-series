@@ -10,7 +10,7 @@ namespace DependencyInjection.Console
             var useColors = false;
             var width = 25;
             var height = 15;
-            var pattern = "circle";
+            var pattern = "sdkfjhfskjdfhk";
 
             var optionSet = new OptionSet
                 {

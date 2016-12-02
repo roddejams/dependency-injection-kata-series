@@ -14,25 +14,26 @@ namespace DependencyInjection.Console
         {
             builder.Register(c => new AsciiWriter()).As<ICharacterWriter>().As<AsciiWriter>();
             if (UseColors) builder.Register(c => new ColorWriter(c.Resolve<AsciiWriter>())).As<ICharacterWriter>();
+
             builder.Register(c => new PatternWriter(c.Resolve<ICharacterWriter>())).As<PatternWriter>();
-            builder.Register(c => GetSquarePainter(Pattern)).As<ISquarePainter>();
-            builder.Register(c => new PatternGenerator(c.Resolve<ISquarePainter>())).As<PatternGenerator>();
+            builder.Register(c => new CircleSquarePainter()).Named<ISquarePainter>("circle");
+            builder.Register(c => new OddEvenSquarePainter()).Named<ISquarePainter>("oddeven");
+            builder.Register(c => new WhiteSquarePainter()).Named<ISquarePainter>("white");
+            builder.Register(ResolvePatternGenerator).As<PatternGenerator>();
+
             builder.Register(c => new PatternApp(c.Resolve<PatternWriter>(), c.Resolve<PatternGenerator>())).As<PatternApp>();
         }
 
-        private static ISquarePainter GetSquarePainter(string pattern)
+        private PatternGenerator ResolvePatternGenerator(IComponentContext context)
         {
-            switch (pattern)
+            var squarePainter = context.ResolveOptionalNamed<ISquarePainter>(Pattern);
+
+            if (squarePainter == null)
             {
-                case "circle":
-                    return new CircleSquarePainter();
-                case "oddeven":
-                    return new OddEvenSquarePainter();
-                case "white":
-                    return new WhiteSquarePainter();
-                default:
-                    throw new ArgumentException($"Pattern '{pattern}' not found!");
+                throw new ArgumentException($"Pattern '{Pattern}' not found!");
             }
+
+            return new PatternGenerator(squarePainter);
         }
     }
 }
