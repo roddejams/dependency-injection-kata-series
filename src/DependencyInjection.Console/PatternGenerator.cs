@@ -1,4 +1,6 @@
-﻿using DependencyInjection.Console.Entities;
+﻿using System;
+using Autofac.Features.Indexed;
+using DependencyInjection.Console.Entities;
 using DependencyInjection.Console.SquarePainters;
 
 namespace DependencyInjection.Console
@@ -7,9 +9,12 @@ namespace DependencyInjection.Console
     {
         private readonly ISquarePainter _squarePainter;
 
-        public PatternGenerator(ISquarePainter squarePainter)
+        public PatternGenerator(IIndex<string, ISquarePainter> squarePainter, string pattern)
         {
-            _squarePainter = squarePainter;
+            if (!squarePainter.TryGetValue(pattern, out _squarePainter))
+            {
+                throw new ArgumentException($"Pattern '{pattern}' not found!");
+            }
         }
 
         public Pattern Generate(int width, int height)
