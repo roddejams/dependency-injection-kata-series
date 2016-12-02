@@ -1,7 +1,4 @@
-﻿using System;
-using Autofac;
-using DependencyInjection.Console.CharacterWriters;
-using DependencyInjection.Console.SquarePainters;
+﻿using Autofac; 
 using NDesk.Options;
 
 namespace DependencyInjection.Console
@@ -26,12 +23,11 @@ namespace DependencyInjection.Console
 
             var builder = new ContainerBuilder();
 
-            builder.Register(c => new AsciiWriter()).As<ICharacterWriter>().As<AsciiWriter>();
-            if (useColors) builder.Register(c => new ColorWriter(c.Resolve<AsciiWriter>())).As<ICharacterWriter>();
-            builder.Register(c => new PatternWriter(c.Resolve<ICharacterWriter>())).As<PatternWriter>();
-            builder.Register(c => GetSquarePainter(pattern)).As<ISquarePainter>();
-            builder.Register(c => new PatternGenerator(c.Resolve<ISquarePainter>())).As<PatternGenerator>();
-            builder.Register(c => new PatternApp(c.Resolve<PatternWriter>(), c.Resolve<PatternGenerator>())).As<PatternApp>();
+            builder.RegisterModule(new PatternAppModule
+            {
+                Pattern = pattern,
+                UseColors =  useColors
+            });
 
             var container = builder.Build();
 
@@ -39,21 +35,6 @@ namespace DependencyInjection.Console
             {
                 var app = scope.Resolve<PatternApp>();
                 app.Run(width, height);
-            }
-        }
-
-        private static ISquarePainter GetSquarePainter(string pattern)
-        {
-            switch (pattern)
-            {
-                case "circle":
-                    return new CircleSquarePainter();
-                case "oddeven":
-                    return new OddEvenSquarePainter();
-                case "white":
-                    return new WhiteSquarePainter();
-                default:
-                    throw new ArgumentException($"Pattern '{pattern}' not found!");
             }
         }
     }
