@@ -22,9 +22,21 @@ namespace DependencyInjection.Console
             builder.Register(c => new CircleSquarePainter()).Named<ISquarePainter>("circle");
             builder.Register(c => new OddEvenSquarePainter()).Named<ISquarePainter>("oddeven");
             builder.Register(c => new WhiteSquarePainter()).Named<ISquarePainter>("white");
-            builder.RegisterType<PatternGenerator>().WithParameter("pattern", Pattern).As<PatternGenerator>();
+            builder.Register(ResolvePatternGenerator).As<PatternGenerator>();
 
             builder.Register(c => new PatternApp(c.Resolve<PatternWriter>(), c.Resolve<PatternGenerator>())).As<PatternApp>();
+        }
+
+        private PatternGenerator ResolvePatternGenerator(IComponentContext context)
+        {
+            var squarePainter = context.ResolveOptionalNamed<ISquarePainter>(Pattern);
+
+            if (squarePainter == null)
+            {
+                throw new ArgumentException($"Pattern '{Pattern}' not found!");
+            }
+
+            return new PatternGenerator(squarePainter);
         }
     }
 }
