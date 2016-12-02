@@ -27,16 +27,26 @@ We have provided you with a console application that draws patterns.
 
 ![Circle Pattern](Resources/circle-pattern.png)
 
-Find the entry point of this application and learn about the different options it provides.
+Find the entry point of this application and learn about the different command-line options it provides.
 
-### Task 2: Extract dependencies to the top level of the application
+### Task 2: Use a command-line option to switch between patterns
+
+We have provided three patterns for you to try. Unfortunately we only hooked one up.
+
+Use the command-line option `--pattern` to switch between these, but make as few changes as possible!
+
+### Task 3: Rewind
+
+Make sure you have commited your changes from the previous task, then revert them using `git revert HEAD`. This will create a new commit that _reverts_ the changes introduced by the latest commit -- which will effectively take your codebase back to its initial state. 
+
+### Task 4: Extract dependencies to the top level of the application
 
 Wire up the application in one place using constructor injection. To do this you will need to recursively extract all dependencies as new constructor parameters. If you have done this right, the only place that constructs objects will be the entrypoint of the application.
 
 We encourage using R# as this codebase does not have tests.
 
-### Task 3: Use a command line option to switch between patterns
+### Task 5: Repeat _Task 2_ on the improved codebase
 
-We have provided three patterns for you to try. Unfortunately we only hooked one up.
+This time, feel free to make as many changes as you want. Do not use a container... yet!
 
-Use the command-line option `--pattern` to switch between these. Do not use a container... yet!
+How does it compare to your first attempt?
