@@ -10,39 +10,36 @@ namespace DependencyInjection.Console
     {
         private static void Main(string[] args)
         {
-            var builder = new ContainerBuilder();
-            var container = builder.Build();
+            var useColors = false;
+            var width = 25;
+            var height = 15;
+            var pattern = "circle";
 
-            using (var scope = container.BeginLifetimeScope())
-            {
-                var useColors = false;
-                var width = 25;
-                var height = 15;
-                var pattern = "circle";
-
-                var optionSet = new OptionSet
+            var optionSet = new OptionSet
                 {
                     {"c|colors", value => useColors = value != null},
                     {"w|width=", value => width = int.Parse(value)},
                     {"h|height=", value => height = int.Parse(value)},
                     {"p|pattern=", value => pattern = value}
                 };
-                optionSet.Parse(args);
+            optionSet.Parse(args);
 
-                var characterWriter = GetCharacterWriter(useColors);
-                var patternWriter = new PatternWriter(characterWriter);
-                var squarePainter = GetSquarePainter(pattern);
-                var patternGenerator = new PatternGenerator(squarePainter);
+            var builder = new ContainerBuilder();
 
-                var app = new PatternApp(patternWriter, patternGenerator);
+            builder.Register(c => new AsciiWriter()).As<ICharacterWriter>().As<AsciiWriter>();
+            if (useColors) builder.Register(c => new ColorWriter(c.Resolve<AsciiWriter>())).As<ICharacterWriter>();
+            builder.Register(c => new PatternWriter(c.Resolve<ICharacterWriter>())).As<PatternWriter>();
+            builder.Register(c => GetSquarePainter(pattern)).As<ISquarePainter>();
+            builder.Register(c => new PatternGenerator(c.Resolve<ISquarePainter>())).As<PatternGenerator>();
+            builder.Register(c => new PatternApp(c.Resolve<PatternWriter>(), c.Resolve<PatternGenerator>())).As<PatternApp>();
+
+            var container = builder.Build();
+
+            using (var scope = container.BeginLifetimeScope())
+            {
+                var app = scope.Resolve<PatternApp>();
                 app.Run(width, height);
             }
-        }
-
-        private static ICharacterWriter GetCharacterWriter(bool useColors)
-        {
-            var writer = new AsciiWriter();
-            return useColors ? (ICharacterWriter) new ColorWriter(writer) : writer;
         }
 
         private static ISquarePainter GetSquarePainter(string pattern)
