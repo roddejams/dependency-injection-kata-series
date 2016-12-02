@@ -1,4 +1,5 @@
 ﻿using System;
+using Autofac;
 using DependencyInjection.Console.CharacterWriters;
 using DependencyInjection.Console.SquarePainters;
 using NDesk.Options;
@@ -9,27 +10,33 @@ namespace DependencyInjection.Console
     {
         private static void Main(string[] args)
         {
-            var useColors = false;
-            var width = 25;
-            var height = 15;
-            var pattern = "circle";
+            var builder = new ContainerBuilder();
+            var container = builder.Build();
 
-            var optionSet = new OptionSet
+            using (var scope = container.BeginLifetimeScope())
             {
-                {"c|colors", value => useColors = value != null},
-                {"w|width=", value => width = int.Parse(value)},
-                {"h|height=", value => height = int.Parse(value)},
-                {"p|pattern=", value => pattern = value}
-            };
-            optionSet.Parse(args);
+                var useColors = false;
+                var width = 25;
+                var height = 15;
+                var pattern = "circle";
 
-            var characterWriter = GetCharacterWriter(useColors);
-            var patternWriter = new PatternWriter(characterWriter);
-            var squarePainter = GetSquarePainter(pattern);
-            var patternGenerator = new PatternGenerator(squarePainter);
+                var optionSet = new OptionSet
+                {
+                    {"c|colors", value => useColors = value != null},
+                    {"w|width=", value => width = int.Parse(value)},
+                    {"h|height=", value => height = int.Parse(value)},
+                    {"p|pattern=", value => pattern = value}
+                };
+                optionSet.Parse(args);
 
-            var app = new PatternApp(patternWriter, patternGenerator);
-            app.Run(width, height);
+                var characterWriter = GetCharacterWriter(useColors);
+                var patternWriter = new PatternWriter(characterWriter);
+                var squarePainter = GetSquarePainter(pattern);
+                var patternGenerator = new PatternGenerator(squarePainter);
+
+                var app = new PatternApp(patternWriter, patternGenerator);
+                app.Run(width, height);
+            }
         }
 
         private static ICharacterWriter GetCharacterWriter(bool useColors)
